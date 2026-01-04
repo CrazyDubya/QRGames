@@ -44,6 +44,12 @@ app.post('/api/lobby/create', async (req, res) => {
 // Get lobby info
 app.get('/api/lobby/:lobbyId', (req, res) => {
   const { lobbyId } = req.params;
+  
+  // Validate lobby ID format
+  if (!lobbyId || typeof lobbyId !== 'string' || !/^[a-f0-9]{8}$/.test(lobbyId)) {
+    return res.status(400).json({ error: 'Invalid lobby ID format' });
+  }
+  
   const lobby = lobbies.get(lobbyId);
   
   if (!lobby) {
@@ -74,6 +80,13 @@ io.on('connection', (socket) => {
   // Player joins lobby
   socket.on('join-lobby', (data) => {
     const { lobbyId, player } = data;
+    
+    // Validate lobby ID format (should be 8 character UUID segment)
+    if (!lobbyId || typeof lobbyId !== 'string' || !/^[a-f0-9]{8}$/.test(lobbyId)) {
+      socket.emit('error', { message: 'Invalid lobby ID' });
+      return;
+    }
+    
     const lobby = lobbies.get(lobbyId);
     
     if (!lobby) {
@@ -81,11 +94,28 @@ io.on('connection', (socket) => {
       return;
     }
     
+    // Validate player data
+    if (!player || typeof player.name !== 'string' || player.name.trim().length === 0) {
+      socket.emit('error', { message: 'Invalid player name' });
+      return;
+    }
+    
+    // Sanitize player name (limit length and remove control characters)
+    const sanitizedName = player.name.trim().substring(0, 30).replace(/[\x00-\x1F\x7F]/g, '');
+    
+    // Validate avatar if provided (must be a data URL for image)
+    let sanitizedAvatar = null;
+    if (player.avatar && typeof player.avatar === 'string') {
+      if (/^data:image\/(jpeg|jpg|png|gif|webp);base64,/.test(player.avatar)) {
+        sanitizedAvatar = player.avatar;
+      }
+    }
+    
     // Add player to lobby
     const playerData = {
       id: socket.id,
-      name: player.name,
-      avatar: player.avatar || null,
+      name: sanitizedName,
+      avatar: sanitizedAvatar,
       joinedAt: new Date()
     };
     
@@ -98,7 +128,7 @@ io.on('connection', (socket) => {
       players: lobby.players
     });
     
-    console.log(`Player ${player.name} joined lobby ${lobbyId}`);
+    console.log(`Player ${sanitizedName} joined lobby ${lobbyId}`);
   });
   
   // Player leaves

@@ -304,10 +304,11 @@
     }
     
     function getInitials(name) {
-      if (!name || name.trim() === '') return '';
+      if (!name || typeof name !== 'string' || name.trim() === '') return '';
       return name
         .trim()
         .split(' ')
+        .filter(word => word.length > 0)
         .map(word => word[0])
         .join('')
         .toUpperCase()
@@ -325,11 +326,27 @@
     function handlePhotoUpload(event) {
       const file = event.target.files[0];
       if (file) {
+        // Validate file type
+        if (!file.type.match(/^image\/(jpeg|jpg|png|gif|webp)$/)) {
+          showError('Please upload a valid image file (JPEG, PNG, GIF, or WebP)');
+          return;
+        }
+        
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          showError('Image file is too large. Please use an image under 5MB.');
+          return;
+        }
+        
         const reader = new FileReader();
         reader.onload = (e) => {
           currentAvatar = e.target.result;
-          document.getElementById('avatarPreview').innerHTML = 
-            `<img src="${currentAvatar}" alt="Avatar">`;
+          const preview = document.getElementById('avatarPreview');
+          const img = document.createElement('img');
+          img.src = currentAvatar;
+          img.alt = 'Avatar';
+          preview.innerHTML = '';
+          preview.appendChild(img);
         };
         reader.readAsDataURL(file);
       }
@@ -369,8 +386,12 @@
       ctx.drawImage(video, 0, 0);
       
       currentAvatar = canvas.toDataURL('image/jpeg', 0.8);
-      document.getElementById('avatarPreview').innerHTML = 
-        `<img src="${currentAvatar}" alt="Avatar">`;
+      const preview = document.getElementById('avatarPreview');
+      const img = document.createElement('img');
+      img.src = currentAvatar;
+      img.alt = 'Avatar';
+      preview.innerHTML = '';
+      preview.appendChild(img);
       
       closeCamera();
     }
@@ -409,10 +430,17 @@
         document.getElementById('successName').textContent = playerName;
         
         const successAvatar = document.getElementById('successAvatar');
+        successAvatar.innerHTML = '';
         if (currentAvatar) {
-          successAvatar.innerHTML = `<img src="${currentAvatar}" alt="Avatar">`;
+          const img = document.createElement('img');
+          img.src = currentAvatar;
+          img.alt = 'Avatar';
+          successAvatar.appendChild(img);
         } else {
-          successAvatar.innerHTML = `<span style="font-size: 2.5em;">${getInitials(playerName)}</span>`;
+          const span = document.createElement('span');
+          span.style.fontSize = '2.5em';
+          span.textContent = getInitials(playerName);
+          successAvatar.appendChild(span);
         }
         
         socket.on('error', (data) => {

@@ -258,25 +258,38 @@
       
       playerList.innerHTML = players.map(player => {
         const avatarContent = player.avatar 
-          ? `<img src="${player.avatar}" alt="${player.name}">`
-          : getInitials(player.name);
+          ? `<img src="${escapeHtml(player.avatar)}" alt="${escapeHtml(player.name)}">`
+          : escapeHtml(getInitials(player.name));
         
         return `
           <li class="player-item">
             <div class="player-avatar">${avatarContent}</div>
-            <div class="player-name">${player.name}</div>
+            <div class="player-name">${escapeHtml(player.name)}</div>
           </li>
         `;
       }).join('');
     }
     
     function getInitials(name) {
+      if (!name || typeof name !== 'string') return '?';
       return name
+        .trim()
         .split(' ')
+        .filter(word => word.length > 0)
         .map(word => word[0])
         .join('')
         .toUpperCase()
-        .substring(0, 2);
+        .substring(0, 2) || '?';
+    }
+    
+    function escapeHtml(unsafe) {
+      if (unsafe === null || unsafe === undefined) return '';
+      return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
   </script>
 </body>
