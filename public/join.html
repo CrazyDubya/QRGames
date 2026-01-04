@@ -318,9 +318,13 @@
     function useInitials() {
       currentAvatar = null;
       const name = document.getElementById('playerName').value;
-      updateInitialsDisplay(name);
-      document.getElementById('avatarPreview').innerHTML = 
-        `<span id="initialsDisplay">${getInitials(name) || '?'}</span>`;
+      const initials = getInitials(name) || '?';
+      const preview = document.getElementById('avatarPreview');
+      preview.innerHTML = '';
+      const span = document.createElement('span');
+      span.id = 'initialsDisplay';
+      span.textContent = initials;
+      preview.appendChild(span);
     }
     
     function handlePhotoUpload(event) {

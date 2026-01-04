@@ -10,6 +10,8 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 const PORT = process.env.PORT || 3000;
+const MAX_PLAYER_NAME_LENGTH = 30;
+const LOBBY_ID_REGEX = /^[a-f0-9]{8}$/;
 
 // Store lobbies in memory
 const lobbies = new Map();
@@ -20,7 +22,7 @@ app.use(express.static('public'));
 
 // Create a new lobby
 app.post('/api/lobby/create', async (req, res) => {
-  const lobbyId = uuidv4().substring(0, 8);
+  const lobbyId = uuidv4().substring(0, 8).toLowerCase();
   const lobby = {
     id: lobbyId,
     players: [],
@@ -46,7 +48,7 @@ app.get('/api/lobby/:lobbyId', (req, res) => {
   const { lobbyId } = req.params;
   
   // Validate lobby ID format
-  if (!lobbyId || typeof lobbyId !== 'string' || !/^[a-f0-9]{8}$/.test(lobbyId)) {
+  if (!lobbyId || typeof lobbyId !== 'string' || !LOBBY_ID_REGEX.test(lobbyId)) {
     return res.status(400).json({ error: 'Invalid lobby ID format' });
   }
   
@@ -69,6 +71,12 @@ io.on('connection', (socket) => {
   
   // Host joins to monitor lobby
   socket.on('host-lobby', (lobbyId) => {
+    // Validate lobby ID format
+    if (!lobbyId || typeof lobbyId !== 'string' || !LOBBY_ID_REGEX.test(lobbyId)) {
+      socket.emit('error', { message: 'Invalid lobby ID' });
+      return;
+    }
+    
     const lobby = lobbies.get(lobbyId);
     if (lobby) {
       lobby.hostSocketId = socket.id;
@@ -81,8 +89,8 @@ io.on('connection', (socket) => {
   socket.on('join-lobby', (data) => {
     const { lobbyId, player } = data;
     
-    // Validate lobby ID format (should be 8 character UUID segment)
-    if (!lobbyId || typeof lobbyId !== 'string' || !/^[a-f0-9]{8}$/.test(lobbyId)) {
+    // Validate lobby ID format (should be 8 character lowercase hex)
+    if (!lobbyId || typeof lobbyId !== 'string' || !LOBBY_ID_REGEX.test(lobbyId)) {
       socket.emit('error', { message: 'Invalid lobby ID' });
       return;
     }
@@ -101,7 +109,7 @@ io.on('connection', (socket) => {
     }
     
     // Sanitize player name (limit length and remove control characters)
-    const sanitizedName = player.name.trim().substring(0, 30).replace(/[\x00-\x1F\x7F]/g, '');
+    const sanitizedName = player.name.trim().substring(0, MAX_PLAYER_NAME_LENGTH).replace(/[\x00-\x1F\x7F]/g, '');
     
     // Validate avatar if provided (must be a data URL for image)
     let sanitizedAvatar = null;
