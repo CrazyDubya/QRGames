@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Lobby - QR Games</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .lobby-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 2.5em;
+    }
+    
+    .lobby-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .lobby-id {
+      font-size: 2em;
+      font-weight: bold;
+      color: #667eea;
+      letter-spacing: 2px;
+    }
+    
+    .game-badge {
+      display: inline-block;
+      padding: 8px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 20px;
+      margin: 10px 0;
+      font-size: 1.1em;
+    }
+    
+    .qr-section {
+      text-align: center;
+      padding: 30px;
+      background: #f8f9fa;
+      border-radius: 15px;
+      margin: 20px 0;
+    }
+    
+    #qrCode img {
+      max-width: 300px;
+      width: 100%;
+    }
+    
+    .join-url {
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 10px;
+      font-family: monospace;
+      word-break: break-all;
+      margin: 20px 0;
+      text-align: center;
+    }
+    
+    .players-section {
+      margin-top: 30px;
+    }
+    
+    .players-section h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    
+    .player-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    
+    .player-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .player-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2em;
+      flex-shrink: 0;
+    }
+    
+    .player-avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
+    .player-name {
+      font-size: 1em;
+      color: #333;
+      font-weight: 500;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 1.1em;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin: 10px;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .button-container {
+      text-align: center;
+      margin-top: 30px;
+    }
+    
+    #gameSection {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="lobby-card">
+      <div id="lobbySection">
+        <h1>🎮 Game Lobby</h1>
+        
+        <div class="lobby-header">
+          <div class="lobby-id" id="lobbyId"></div>
+          <div class="game-badge" id="gameBadge"></div>
+        </div>
+        
+        <div class="qr-section">
+          <div id="qrCode"></div>
+          <p style="color: #666; margin: 15px 0; font-size: 1.1em;">
+            Scan this QR code to join!
+          </p>
+          <div class="join-url">
+            <strong>Join URL:</strong><br>
+            <span id="joinUrl"></span>
+          </div>
+        </div>
+        
+        <div class="players-section">
+          <h2>Players in Lobby (<span id="playerCount">0</span>)</h2>
+          <ul class="player-list" id="playerList"></ul>
+        </div>
+        
+        <div class="button-container">
+          <button onclick="startGame()" id="startBtn">Start Game</button>
+        </div>
+      </div>
+      
+      <div id="gameSection">
+        <!-- Game content will be loaded here -->
+      </div>
+    </div>
+  </div>
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    let socket;
+    let lobbyId;
+    let gameType;
+    
+    // Get lobby info from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    lobbyId = urlParams.get('id');
+    gameType = urlParams.get('game');
+    
+    if (!lobbyId || !gameType) {
+      alert('Invalid lobby link');
+      window.location.href = '/';
+    }
+    
+    // Initialize
+    async function init() {
+      try {
+        // Get lobby info
+        const response = await fetch(`/api/lobby/${lobbyId}`);
+        const data = await response.json();
+        
+        // Display lobby info
+        document.getElementById('lobbyId').textContent = lobbyId;
+        document.getElementById('gameBadge').textContent = gameType.charAt(0).toUpperCase() + gameType.slice(1);
+        
+        const joinUrl = `${window.location.protocol}//${window.location.host}/join.html?lobby=${lobbyId}`;
+        document.getElementById('joinUrl').textContent = joinUrl;
+        
+        // Generate QR code
+        const qrResponse = await fetch(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(joinUrl)}`);
+        document.getElementById('qrCode').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(joinUrl)}" alt="QR Code">`;
+        
+        // Connect to socket
+        socket = io();
+        socket.emit('host-lobby', lobbyId);
+        
+        // Listen for players joining
+        socket.on('player-joined', (data) => {
+          updatePlayerList(data.players);
+        });
+        
+        socket.on('player-left', (data) => {
+          updatePlayerList(data.players);
+        });
+        
+        socket.on('game-started', (data) => {
+          // Load game page
+          window.location.href = `/game-${gameType}.html?lobby=${lobbyId}`;
+        });
+        
+        // Update initial player list
+        updatePlayerList(data.players);
+        
+      } catch (error) {
+        console.error('Error loading lobby:', error);
+        alert('Failed to load lobby');
+        window.location.href = '/';
+      }
+    }
+    
+    function updatePlayerList(players) {
+      const playerList = document.getElementById('playerList');
+      const playerCount = document.getElementById('playerCount');
+      
+      playerCount.textContent = players.length;
+      
+      playerList.innerHTML = players.map(player => {
+        const avatarContent = player.avatar 
+          ? `<img src="${escapeHtml(player.avatar)}" alt="${escapeHtml(player.name)}">`
+          : escapeHtml(getInitials(player.name));
+        
+        return `
+          <li class="player-item">
+            <div class="player-avatar">${avatarContent}</div>
+            <div class="player-name">${escapeHtml(player.name)}</div>
+          </li>
+        `;
+      }).join('');
+      
+      // Enable start button if at least one player
+      document.getElementById('startBtn').disabled = players.length === 0;
+    }
+    
+    function startGame() {
+      socket.emit('start-game', { lobbyId, gameType });
+    }
+    
+    function getInitials(name) {
+      if (!name || typeof name !== 'string') return '?';
+      return name
+        .trim()
+        .split(' ')
+        .filter(word => word.length > 0)
+        .map(word => word[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2) || '?';
+    }
+    
+    function escapeHtml(unsafe) {
+      if (unsafe === null || unsafe === undefined) return '';
+      return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+    
+    init();
+  </script>
+</body>
+</html>

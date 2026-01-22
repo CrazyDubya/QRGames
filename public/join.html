@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join Game - QR Games</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 2em;
+      text-align: center;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 1em;
+    }
+    
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+    
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .avatar-section {
+      margin-bottom: 25px;
+    }
+    
+    .avatar-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2.5em;
+      font-weight: bold;
+      margin: 20px auto;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .avatar-options {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .avatar-btn {
+      padding: 10px 20px;
+      border: 2px solid #667eea;
+      background: white;
+      color: #667eea;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: all 0.3s;
+    }
+    
+    .avatar-btn:hover {
+      background: #667eea;
+      color: white;
+    }
+    
+    input[type="file"] {
+      display: none;
+    }
+    
+    button[type="submit"] {
+      width: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px;
+      font-size: 1.2em;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-weight: 600;
+    }
+    
+    button[type="submit"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    button[type="submit"]:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .error {
+      background: #fee;
+      color: #c33;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .success {
+      text-align: center;
+    }
+    
+    .success h2 {
+      color: #4caf50;
+      margin-bottom: 20px;
+    }
+    
+    #video {
+      width: 100%;
+      max-width: 300px;
+      border-radius: 10px;
+      margin: 20px auto;
+      display: block;
+    }
+    
+    .camera-controls {
+      text-align: center;
+      margin-top: 15px;
+    }
+    
+    .camera-controls button {
+      margin: 5px;
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+    
+    .capture-btn {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .cancel-btn {
+      background: #f44336;
+      color: white;
+    }
+    
+    #cameraSection {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="errorMessage" class="error" style="display: none;"></div>
+    
+    <div id="joinForm">
+      <h1>🎮 Join Game</h1>
+      <p class="subtitle">Create your player profile</p>
+      
+      <form id="profileForm" onsubmit="joinLobby(event)">
+        <div class="form-group">
+          <label for="playerName">Your Name *</label>
+          <input 
+            type="text" 
+            id="playerName" 
+            name="playerName" 
+            placeholder="Enter your name"
+            required
+            maxlength="30"
+          >
+        </div>
+        
+        <div class="avatar-section">
+          <label>Avatar</label>
+          <div class="avatar-preview" id="avatarPreview">
+            <span id="initialsDisplay">?</span>
+          </div>
+          
+          <div class="avatar-options">
+            <button type="button" class="avatar-btn" onclick="openCamera()">
+              📷 Take Selfie
+            </button>
+            <button type="button" class="avatar-btn" onclick="document.getElementById('photoUpload').click()">
+              🖼️ Upload Photo
+            </button>
+            <button type="button" class="avatar-btn" onclick="useInitials()">
+              ✨ Use Initials
+            </button>
+          </div>
+          
+          <input 
+            type="file" 
+            id="photoUpload" 
+            accept="image/*"
+            onchange="handlePhotoUpload(event)"
+          >
+        </div>
+        
+        <div id="cameraSection">
+          <video id="video" autoplay playsinline></video>
+          <div class="camera-controls">
+            <button type="button" class="capture-btn" onclick="capturePhoto()">
+              📸 Capture
+            </button>
+            <button type="button" class="cancel-btn" onclick="closeCamera()">
+              ✖️ Cancel
+            </button>
+          </div>
+        </div>
+        
+        <button type="submit" id="joinButton">Join Game</button>
+      </form>
+    </div>
+    
+    <div id="successSection" style="display: none;">
+      <div class="success">
+        <h2>✅ Joined Successfully!</h2>
+        <p>You're now in the lobby. Wait for the game to start!</p>
+        <div class="avatar-preview" id="successAvatar" style="margin-top: 30px;">
+        </div>
+        <p id="successName" style="font-size: 1.5em; margin-top: 20px; color: #333;"></p>
+      </div>
+    </div>
+  </div>
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    let socket;
+    let lobbyId;
+    let currentAvatar = null;
+    let videoStream = null;
+    
+    // Get lobby ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    lobbyId = urlParams.get('lobby');
+    
+    if (!lobbyId) {
+      showError('Invalid lobby link. Please scan the QR code again.');
+      document.getElementById('joinButton').disabled = true;
+    }
+    
+    // Update initials preview as user types
+    document.getElementById('playerName').addEventListener('input', (e) => {
+      if (!currentAvatar) {
+        updateInitialsDisplay(e.target.value);
+      }
+    });
+    
+    function updateInitialsDisplay(name) {
+      const initials = getInitials(name);
+      document.getElementById('initialsDisplay').textContent = initials || '?';
+    }
+    
+    function getInitials(name) {
+      if (!name || typeof name !== 'string' || name.trim() === '') return '';
+      return name
+        .trim()
+        .split(' ')
+        .filter(word => word.length > 0)
+        .map(word => word[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2);
+    }
+    
+    function useInitials() {
+      currentAvatar = null;
+      const name = document.getElementById('playerName').value;
+      const initials = getInitials(name) || '?';
+      const preview = document.getElementById('avatarPreview');
+      preview.innerHTML = '';
+      const span = document.createElement('span');
+      span.id = 'initialsDisplay';
+      span.textContent = initials;
+      preview.appendChild(span);
+    }
+    
+    function handlePhotoUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        // Validate file type
+        if (!file.type.match(/^image\/(jpeg|jpg|png|gif|webp)$/)) {
+          showError('Please upload a valid image file (JPEG, PNG, GIF, or WebP)');
+          return;
+        }
+        
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          showError('Image file is too large. Please use an image under 5MB.');
+          return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          currentAvatar = e.target.result;
+          const preview = document.getElementById('avatarPreview');
+          const img = document.createElement('img');
+          img.src = currentAvatar;
+          img.alt = 'Avatar';
+          preview.innerHTML = '';
+          preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    async function openCamera() {
+      try {
+        videoStream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: 'user' },
+          audio: false 
+        });
+        
+        const video = document.getElementById('video');
+        video.srcObject = videoStream;
+        document.getElementById('cameraSection').style.display = 'block';
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        showError('Could not access camera. Please check permissions or upload a photo instead.');
+      }
+    }
+    
+    function closeCamera() {
+      if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+        videoStream = null;
+      }
+      document.getElementById('cameraSection').style.display = 'none';
+    }
+    
+    function capturePhoto() {
+      const video = document.getElementById('video');
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+      
+      currentAvatar = canvas.toDataURL('image/jpeg', 0.8);
+      const preview = document.getElementById('avatarPreview');
+      const img = document.createElement('img');
+      img.src = currentAvatar;
+      img.alt = 'Avatar';
+      preview.innerHTML = '';
+      preview.appendChild(img);
+      
+      closeCamera();
+    }
+    
+    async function joinLobby(event) {
+      event.preventDefault();
+      
+      const playerName = document.getElementById('playerName').value.trim();
+      
+      if (!playerName) {
+        showError('Please enter your name');
+        return;
+      }
+      
+      // If no avatar selected, use initials
+      if (!currentAvatar) {
+        useInitials();
+      }
+      
+      try {
+        // Connect to socket
+        socket = io();
+        
+        // Join the lobby
+        socket.emit('join-lobby', {
+          lobbyId: lobbyId,
+          player: {
+            name: playerName,
+            avatar: currentAvatar
+          }
+        });
+        
+        // Show success message
+        document.getElementById('joinForm').style.display = 'none';
+        document.getElementById('successSection').style.display = 'block';
+        document.getElementById('successName').textContent = playerName;
+        
+        const successAvatar = document.getElementById('successAvatar');
+        successAvatar.innerHTML = '';
+        if (currentAvatar) {
+          const img = document.createElement('img');
+          img.src = currentAvatar;
+          img.alt = 'Avatar';
+          successAvatar.appendChild(img);
+        } else {
+          const span = document.createElement('span');
+          span.style.fontSize = '2.5em';
+          span.textContent = getInitials(playerName);
+          successAvatar.appendChild(span);
+        }
+        
+        socket.on('error', (data) => {
+          showError(data.message);
+        });
+        
+      } catch (error) {
+        console.error('Error joining lobby:', error);
+        showError('Failed to join lobby. Please try again.');
+      }
+    }
+    
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      setTimeout(() => {
+        errorDiv.style.display = 'none';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

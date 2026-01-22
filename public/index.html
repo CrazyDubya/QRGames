@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Games - Create Lobby</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 2.5em;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 1.1em;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 1.2em;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin: 10px;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    #lobbySection {
+      display: none;
+    }
+    
+    #qrCode {
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      display: inline-block;
+    }
+    
+    #qrCode img {
+      max-width: 300px;
+      width: 100%;
+      height: auto;
+    }
+    
+    .lobby-info {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    
+    .lobby-id {
+      font-size: 2em;
+      font-weight: bold;
+      color: #667eea;
+      letter-spacing: 2px;
+      margin: 10px 0;
+    }
+    
+    .players-section {
+      margin-top: 30px;
+      text-align: left;
+    }
+    
+    .players-section h2 {
+      color: #333;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    
+    .player-list {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .player-item {
+      background: #f8f9fa;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .player-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2em;
+      flex-shrink: 0;
+    }
+    
+    .player-avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
+    .player-name {
+      font-size: 1.1em;
+      color: #333;
+      font-weight: 500;
+    }
+    
+    .join-url {
+      background: #e9ecef;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+      word-break: break-all;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 QR Games</h1>
+    <p class="subtitle">Create a lobby and invite players with a QR code!</p>
+    <button onclick="createLobby()">Create Lobby</button>
+  </div>
+  
+  <script>
+    
+    async function createLobby() {
+      // Redirect to game selection page
+      window.location.href = '/select-game.html';
+    }
+  </script>
+</body>
+</html>
