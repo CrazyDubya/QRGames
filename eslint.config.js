@@ -41,6 +41,22 @@ export default [
     },
   },
   {
+    files: ['tests/**/*.js', '**/*.test.js', '**/*.spec.js'],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        it: 'readonly',
+        jest: 'readonly',
+      },
+    },
+  },
+  {
     ignores: ['node_modules/**', 'dist/**', 'build/**', 'coverage/**'],
   },
 ];

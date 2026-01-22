@@ -24,10 +24,13 @@ function sanitizePlayerName(name) {
   if (!name || typeof name !== 'string') {
     return '';
   }
-  return name
-    .trim()
-    .substring(0, MAX_PLAYER_NAME_LENGTH)
-    .replace(/[\x00-\x1F\x7F]/g, '');
+  return (
+    name
+      .trim()
+      .substring(0, MAX_PLAYER_NAME_LENGTH)
+      // eslint-disable-next-line no-control-regex -- Intentionally removing control characters
+      .replace(/[\x00-\x1F\x7F]/g, '')
+  );
 }
 
 /**

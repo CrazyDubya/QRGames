@@ -1,7 +1,12 @@
 /**
  * Game socket event handlers with async storage support
  */
-const { initializeTriviaGame, checkAnswer, nextQuestion, getFinalScores } = require('../games/trivia');
+const {
+  initializeTriviaGame,
+  checkAnswer,
+  nextQuestion,
+  getFinalScores,
+} = require('../games/trivia');
 const { initializeBingoGame, checkBingoPattern, callNumber } = require('../games/bingo');
 
 /**

@@ -72,9 +72,7 @@ describe('Game Logic Functions', () => {
     test('should not have duplicate numbers in columns', () => {
       const card = generateBingoCard();
       for (let col = 0; col < 5; col++) {
-        const columnNumbers = card
-          .map((row) => row[col].value)
-          .filter((v) => v !== 'FREE');
+        const columnNumbers = card.map((row) => row[col].value).filter((v) => v !== 'FREE');
         const uniqueNumbers = new Set(columnNumbers);
         expect(uniqueNumbers.size).toBe(columnNumbers.length);
       }
@@ -106,12 +104,7 @@ describe('Game Logic Functions', () => {
           return true;
         }
       } else if (pattern === '4-corners') {
-        return (
-          card[0][0].marked &&
-          card[0][4].marked &&
-          card[4][0].marked &&
-          card[4][4].marked
-        );
+        return card[0][0].marked && card[0][4].marked && card[4][0].marked && card[4][4].marked;
       } else if (pattern === 'full-card') {
         return card.every((row) => row.every((cell) => cell.marked));
       }

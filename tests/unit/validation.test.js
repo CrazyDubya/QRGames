@@ -1,9 +1,9 @@
 /**
  * Integration tests for API endpoints
  */
-const request = require('supertest');
-const express = require('express');
-const http = require('http');
+// const request = require('supertest');
+// const express = require('express');
+// const http = require('http');
 
 // Create a simple test server (we'll need to refactor server.js for proper testing)
 describe('API Endpoints', () => {

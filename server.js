@@ -2,7 +2,7 @@
  * @fileoverview QRGames Server - Main entry point
  * Refactored for modularity and maintainability.
  * Supports both in-memory and Redis storage for session persistence.
- * 
+ *
  * @module server
  * @requires express
  * @requires http
@@ -90,4 +90,3 @@ initializeServer();
 
 // Export for testing
 module.exports = { app, server, io, lobbies };
-

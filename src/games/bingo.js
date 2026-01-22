@@ -2,7 +2,7 @@
  * @fileoverview Bingo game logic and card generation
  * Implements 75-ball bingo with multiple win patterns including
  * single line, 4-corners, and full card patterns.
- * 
+ *
  * @module games/bingo
  */
 
@@ -26,7 +26,7 @@
  * - N column (2): 31-45 (with FREE space at center)
  * - G column (3): 46-60
  * - O column (4): 61-75
- * 
+ *
  * @returns {BingoCell[][]} 5x5 bingo card (array of rows)
  */
 function generateBingoCard() {
@@ -72,7 +72,7 @@ function generateBingoCard() {
 /**
  * Initialize bingo game state for a lobby
  * Generates unique bingo cards for all players
- * 
+ *
  * @param {Lobby} lobby - The lobby to initialize
  * @returns {void}
  */
@@ -94,7 +94,7 @@ function initializeBingoGame(lobby) {
  * - single-line: Any row, column, or diagonal
  * - 4-corners: All four corner cells
  * - full-card: All cells marked (blackout)
- * 
+ *
  * @param {BingoCell[][]} card - The bingo card to check
  * @param {string} pattern - The pattern type to check
  * @returns {boolean} True if pattern is complete
@@ -123,9 +123,7 @@ function checkBingoPattern(card, pattern) {
       return true;
     }
   } else if (pattern === '4-corners') {
-    return (
-      card[0][0].marked && card[0][4].marked && card[4][0].marked && card[4][4].marked
-    );
+    return card[0][0].marked && card[0][4].marked && card[4][0].marked && card[4][4].marked;
   } else if (pattern === 'full-card') {
     return card.every((row) => row.every((cell) => cell.marked));
   }
@@ -136,7 +134,7 @@ function checkBingoPattern(card, pattern) {
 /**
  * Call a random available bingo number
  * Numbers range from 1-75 and are only called once
- * 
+ *
  * @param {Lobby} lobby - The lobby with game state
  * @returns {{number: number|null, calledNumbers: number[]}} Called number result
  */

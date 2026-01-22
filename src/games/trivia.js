@@ -2,7 +2,7 @@
  * @fileoverview Trivia game logic and state management
  * Contains functions for initializing trivia games, checking answers,
  * managing question progression, and calculating final scores.
- * 
+ *
  * @module games/trivia
  */
 
@@ -66,7 +66,7 @@ const triviaQuestions = [
 /**
  * Initialize trivia game state for a lobby
  * Sets up questions and initializes all player scores to zero
- * 
+ *
  * @param {Lobby} lobby - The lobby to initialize
  * @returns {void}
  */
@@ -84,7 +84,7 @@ function initializeTriviaGame(lobby) {
 
 /**
  * Check if an answer is correct
- * 
+ *
  * @param {Lobby} lobby - The lobby with game state
  * @param {string} answer - The submitted answer
  * @returns {boolean} True if answer is correct
@@ -101,7 +101,7 @@ function checkAnswer(lobby, answer) {
 /**
  * Move to next question in the trivia game
  * Increments the question index and checks if game is over
- * 
+ *
  * @param {Lobby} lobby - The lobby
  * @returns {{hasNext: boolean, isGameOver: boolean}} Next question status
  */
@@ -122,7 +122,7 @@ function nextQuestion(lobby) {
 
 /**
  * Get final scores sorted by score (highest first)
- * 
+ *
  * @param {Lobby} lobby - The lobby
  * @returns {Array<{name: string, score: number}>} Sorted player scores
  */
