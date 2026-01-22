@@ -10,7 +10,7 @@ const router = express.Router();
 
 /**
  * Create lobby routes with lobbies storage
- * @param {Map} lobbies - The lobbies storage
+ * @param {Storage} lobbies - The lobbies storage
  * @returns {Router} Express router
  */
 function createLobbyRoutes(lobbies) {
@@ -28,7 +28,7 @@ function createLobbyRoutes(lobbies) {
         gameState: null,
       };
 
-      lobbies.set(lobbyId, lobby);
+      await lobbies.set(lobbyId, lobby);
 
       // Generate QR code
       const joinUrl = `${req.protocol}://${req.get('host')}/join.html?lobby=${lobbyId}`;
@@ -46,7 +46,7 @@ function createLobbyRoutes(lobbies) {
   });
 
   // Get lobby info
-  router.get('/:lobbyId', (req, res) => {
+  router.get('/:lobbyId', async (req, res) => {
     try {
       const { lobbyId } = req.params;
 
@@ -55,7 +55,7 @@ function createLobbyRoutes(lobbies) {
         return res.status(400).json({ error: 'Invalid lobby ID format' });
       }
 
-      const lobby = lobbies.get(lobbyId);
+      const lobby = await lobbies.get(lobbyId);
 
       if (!lobby) {
         return res.status(404).json({ error: 'Lobby not found' });

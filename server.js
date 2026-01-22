@@ -11,6 +11,7 @@ const path = require('path');
 const createLobbyRoutes = require('./src/routes/lobby');
 const setupLobbyHandlers = require('./src/sockets/lobby');
 const setupGameHandlers = require('./src/sockets/game');
+const { createStorage } = require('./src/utils/storage');
 
 // Initialize Express app
 const app = express();
@@ -18,31 +19,52 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 const PORT = process.env.PORT || 3000;
+const STORAGE_TYPE = process.env.STORAGE_TYPE || 'memory'; // 'memory' or 'redis'
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
-// Store lobbies in memory
-const lobbies = new Map();
+// Initialize storage
+let lobbies;
 
-// Middleware
-app.use(express.json());
-app.use(express.static('public'));
+async function initializeServer() {
+  try {
+    // Create storage instance
+    if (STORAGE_TYPE === 'redis') {
+      lobbies = await createStorage('redis', { url: REDIS_URL });
+    } else {
+      lobbies = await createStorage('memory');
+    }
+    console.log(`Using ${STORAGE_TYPE} storage`);
 
-// API Routes
-app.use('/api/lobby', createLobbyRoutes(lobbies));
+    // Middleware
+    app.use(express.json());
+    app.use(express.static('public'));
 
-// Socket.IO connection handling
-io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
+    // API Routes
+    app.use('/api/lobby', createLobbyRoutes(lobbies));
 
-  // Setup socket event handlers
-  setupLobbyHandlers(socket, io, lobbies);
-  setupGameHandlers(socket, io, lobbies);
-});
+    // Socket.IO connection handling
+    io.on('connection', (socket) => {
+      console.log('Client connected:', socket.id);
 
-// Start server
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Visit http://localhost:${PORT} to create a lobby`);
-});
+      // Setup socket event handlers
+      setupLobbyHandlers(socket, io, lobbies);
+      setupGameHandlers(socket, io, lobbies);
+    });
+
+    // Start server
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+      console.log(`Visit http://localhost:${PORT} to create a lobby`);
+    });
+  } catch (error) {
+    console.error('Failed to initialize server:', error);
+    process.exit(1);
+  }
+}
+
+// Initialize and start server
+initializeServer();
 
 // Export for testing
 module.exports = { app, server, io, lobbies };
+

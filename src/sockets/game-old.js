@@ -1,5 +1,5 @@
 /**
- * Game socket event handlers with async storage support
+ * Game socket event handlers
  */
 const { initializeTriviaGame, checkAnswer, nextQuestion, getFinalScores } = require('../games/trivia');
 const { initializeBingoGame, checkBingoPattern, callNumber } = require('../games/bingo');
@@ -8,14 +8,14 @@ const { initializeBingoGame, checkBingoPattern, callNumber } = require('../games
  * Setup game-related socket handlers
  * @param {Socket} socket - Socket.IO socket
  * @param {SocketIO} io - Socket.IO server instance
- * @param {Storage} lobbies - The lobbies storage
+ * @param {Map} lobbies - The lobbies storage
  */
 function setupGameHandlers(socket, io, lobbies) {
   // Start game
-  socket.on('start-game', async (data) => {
+  socket.on('start-game', (data) => {
     try {
       const { lobbyId, gameType } = data;
-      const lobby = await lobbies.get(lobbyId);
+      const lobby = lobbies.get(lobbyId);
 
       if (!lobby || lobby.hostSocketId !== socket.id) {
         return;
@@ -29,8 +29,6 @@ function setupGameHandlers(socket, io, lobbies) {
         initializeBingoGame(lobby);
       }
 
-      await lobbies.set(lobbyId, lobby);
-
       io.to(lobbyId).emit('game-started', {
         gameType: lobby.gameType,
         gameState: lobby.gameState,
@@ -42,10 +40,10 @@ function setupGameHandlers(socket, io, lobbies) {
   });
 
   // Trivia answer submission
-  socket.on('submit-answer', async (data) => {
+  socket.on('submit-answer', (data) => {
     try {
       const { lobbyId, answer } = data;
-      const lobby = await lobbies.get(lobbyId);
+      const lobby = lobbies.get(lobbyId);
 
       if (!lobby || lobby.gameType !== 'trivia') {
         return;
@@ -59,8 +57,6 @@ function setupGameHandlers(socket, io, lobbies) {
       if (isCorrect) {
         player.score = (player.score || 0) + 1;
       }
-
-      await lobbies.set(lobbyId, lobby);
 
       const currentQuestion = lobby.gameState.questions[lobby.gameState.currentQuestionIndex];
       io.to(lobbyId).emit('answer-result', {
@@ -76,16 +72,15 @@ function setupGameHandlers(socket, io, lobbies) {
   });
 
   // Next trivia question
-  socket.on('next-question', async (lobbyId) => {
+  socket.on('next-question', (lobbyId) => {
     try {
-      const lobby = await lobbies.get(lobbyId);
+      const lobby = lobbies.get(lobbyId);
 
       if (!lobby || lobby.hostSocketId !== socket.id || lobby.gameType !== 'trivia') {
         return;
       }
 
       const result = nextQuestion(lobby);
-      await lobbies.set(lobbyId, lobby);
 
       if (result.isGameOver) {
         io.to(lobbyId).emit('game-ended', {
@@ -104,10 +99,10 @@ function setupGameHandlers(socket, io, lobbies) {
   });
 
   // Bingo mark number
-  socket.on('mark-number', async (data) => {
+  socket.on('mark-number', (data) => {
     try {
       const { lobbyId, number } = data;
-      const lobby = await lobbies.get(lobbyId);
+      const lobby = lobbies.get(lobbyId);
 
       if (!lobby || lobby.gameType !== 'bingo') {
         return;
@@ -125,8 +120,6 @@ function setupGameHandlers(socket, io, lobbies) {
         }
       }
 
-      await lobbies.set(lobbyId, lobby);
-
       socket.emit('number-marked', { number });
     } catch (error) {
       console.error('Error marking number:', error);
@@ -135,16 +128,15 @@ function setupGameHandlers(socket, io, lobbies) {
   });
 
   // Call next bingo number
-  socket.on('call-number', async (lobbyId) => {
+  socket.on('call-number', (lobbyId) => {
     try {
-      const lobby = await lobbies.get(lobbyId);
+      const lobby = lobbies.get(lobbyId);
 
       if (!lobby || lobby.hostSocketId !== socket.id || lobby.gameType !== 'bingo') {
         return;
       }
 
       const result = callNumber(lobby);
-      await lobbies.set(lobbyId, lobby);
 
       if (result.number) {
         io.to(lobbyId).emit('number-called', {
@@ -159,10 +151,10 @@ function setupGameHandlers(socket, io, lobbies) {
   });
 
   // Claim bingo
-  socket.on('claim-bingo', async (data) => {
+  socket.on('claim-bingo', (data) => {
     try {
       const { lobbyId, pattern } = data;
-      const lobby = await lobbies.get(lobbyId);
+      const lobby = lobbies.get(lobbyId);
 
       if (!lobby || lobby.gameType !== 'bingo') {
         return;

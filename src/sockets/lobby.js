@@ -7,11 +7,11 @@ const { validateLobbyId, validatePlayerData } = require('../utils/validation');
  * Setup lobby-related socket handlers
  * @param {Socket} socket - Socket.IO socket
  * @param {SocketIO} io - Socket.IO server instance
- * @param {Map} lobbies - The lobbies storage
+ * @param {Storage} lobbies - The lobbies storage
  */
 function setupLobbyHandlers(socket, io, lobbies) {
   // Host joins to monitor lobby
-  socket.on('host-lobby', (lobbyId) => {
+  socket.on('host-lobby', async (lobbyId) => {
     try {
       // Validate lobby ID format
       if (!validateLobbyId(lobbyId)) {
@@ -19,9 +19,10 @@ function setupLobbyHandlers(socket, io, lobbies) {
         return;
       }
 
-      const lobby = lobbies.get(lobbyId);
+      const lobby = await lobbies.get(lobbyId);
       if (lobby) {
         lobby.hostSocketId = socket.id;
+        await lobbies.set(lobbyId, lobby);
         socket.join(lobbyId);
         console.log(`Host joined lobby: ${lobbyId}`);
       }
@@ -32,7 +33,7 @@ function setupLobbyHandlers(socket, io, lobbies) {
   });
 
   // Player joins lobby
-  socket.on('join-lobby', (data) => {
+  socket.on('join-lobby', async (data) => {
     try {
       const { lobbyId, player } = data;
 
@@ -42,7 +43,7 @@ function setupLobbyHandlers(socket, io, lobbies) {
         return;
       }
 
-      const lobby = lobbies.get(lobbyId);
+      const lobby = await lobbies.get(lobbyId);
 
       if (!lobby) {
         socket.emit('error', { message: 'Lobby not found' });
@@ -65,6 +66,7 @@ function setupLobbyHandlers(socket, io, lobbies) {
       };
 
       lobby.players.push(playerData);
+      await lobbies.set(lobbyId, lobby);
       socket.join(lobbyId);
 
       // Notify all clients in the lobby
@@ -81,16 +83,17 @@ function setupLobbyHandlers(socket, io, lobbies) {
   });
 
   // Player leaves
-  socket.on('disconnect', () => {
+  socket.on('disconnect', async () => {
     try {
       console.log('Client disconnected:', socket.id);
 
       // Remove player from all lobbies
-      lobbies.forEach((lobby, lobbyId) => {
+      await lobbies.forEach(async (lobby, lobbyId) => {
         const playerIndex = lobby.players.findIndex((p) => p.id === socket.id);
         if (playerIndex !== -1) {
           const player = lobby.players[playerIndex];
           lobby.players.splice(playerIndex, 1);
+          await lobbies.set(lobbyId, lobby);
 
           io.to(lobbyId).emit('player-left', {
             playerId: socket.id,
