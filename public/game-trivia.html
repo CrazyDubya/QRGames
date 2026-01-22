@@ -1,356 +1,370 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trivia Game - QR Games</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px;
-    }
-    
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    
-    .game-card {
-      background: white;
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin-bottom: 20px;
-    }
-    
-    h1 {
-      color: #333;
-      margin-bottom: 20px;
-      text-align: center;
-      font-size: 2.5em;
-    }
-    
-    .question-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    
-    .question-number {
-      font-size: 1.2em;
-      color: #667eea;
-      font-weight: bold;
-    }
-    
-    .question-text {
-      font-size: 1.8em;
-      color: #333;
-      margin: 20px 0;
-      line-height: 1.4;
-    }
-    
-    .options-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin: 30px 0;
-    }
-    
-    .option-btn {
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      color: #333;
-      border: 3px solid transparent;
-      padding: 20px;
-      font-size: 1.1em;
-      border-radius: 15px;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-align: left;
-      font-weight: 500;
-    }
-    
-    .option-btn:hover:not(:disabled) {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-      border-color: #667eea;
-    }
-    
-    .option-btn.selected {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-color: #667eea;
-    }
-    
-    .option-btn.correct {
-      background: #4caf50;
-      color: white;
-      border-color: #4caf50;
-    }
-    
-    .option-btn.incorrect {
-      background: #f44336;
-      color: white;
-      border-color: #f44336;
-    }
-    
-    .option-btn:disabled {
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-    
-    button.primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      padding: 15px 40px;
-      font-size: 1.2em;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      display: block;
-      margin: 30px auto;
-    }
-    
-    button.primary:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    }
-    
-    button.primary:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    
-    .feedback {
-      text-align: center;
-      padding: 20px;
-      border-radius: 10px;
-      margin: 20px 0;
-      font-size: 1.2em;
-      font-weight: bold;
-    }
-    
-    .feedback.correct {
-      background: #c8e6c9;
-      color: #2e7d32;
-    }
-    
-    .feedback.incorrect {
-      background: #ffcdd2;
-      color: #c62828;
-    }
-    
-    .scoreboard {
-      margin-top: 30px;
-    }
-    
-    .score-item {
-      background: #f8f9fa;
-      padding: 15px;
-      border-radius: 10px;
-      margin: 10px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .score-name {
-      font-weight: 600;
-      color: #333;
-    }
-    
-    .score-value {
-      font-size: 1.5em;
-      font-weight: bold;
-      color: #667eea;
-    }
-    
-    #resultsSection {
-      display: none;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="game-card">
-      <h1>🧠 Trivia Game</h1>
-      
-      <div id="questionSection">
-        <div class="question-header">
-          <div class="question-number" id="questionNumber"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trivia Game - QR Games</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .game-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 2.5em;
+      }
+
+      .question-header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .question-number {
+        font-size: 1.2em;
+        color: #667eea;
+        font-weight: bold;
+      }
+
+      .question-text {
+        font-size: 1.8em;
+        color: #333;
+        margin: 20px 0;
+        line-height: 1.4;
+      }
+
+      .options-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin: 30px 0;
+      }
+
+      .option-btn {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        color: #333;
+        border: 3px solid transparent;
+        padding: 20px;
+        font-size: 1.1em;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: left;
+        font-weight: 500;
+      }
+
+      .option-btn:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        border-color: #667eea;
+      }
+
+      .option-btn.selected {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: #667eea;
+      }
+
+      .option-btn.correct {
+        background: #4caf50;
+        color: white;
+        border-color: #4caf50;
+      }
+
+      .option-btn.incorrect {
+        background: #f44336;
+        color: white;
+        border-color: #f44336;
+      }
+
+      .option-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+
+      button.primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        font-size: 1.2em;
+        border-radius: 50px;
+        cursor: pointer;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        display: block;
+        margin: 30px auto;
+      }
+
+      button.primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      button.primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .feedback {
+        text-align: center;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px 0;
+        font-size: 1.2em;
+        font-weight: bold;
+      }
+
+      .feedback.correct {
+        background: #c8e6c9;
+        color: #2e7d32;
+      }
+
+      .feedback.incorrect {
+        background: #ffcdd2;
+        color: #c62828;
+      }
+
+      .scoreboard {
+        margin-top: 30px;
+      }
+
+      .score-item {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 10px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .score-name {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .score-value {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      #resultsSection {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="game-card">
+        <h1>🧠 Trivia Game</h1>
+
+        <div id="questionSection">
+          <div class="question-header">
+            <div class="question-number" id="questionNumber"></div>
+          </div>
+
+          <div class="question-text" id="questionText"></div>
+
+          <div class="options-grid" id="optionsGrid"></div>
+
+          <div id="feedback" class="feedback" style="display: none"></div>
+
+          <button class="primary" onclick="submitAnswer()" id="submitBtn" disabled>
+            Submit Answer
+          </button>
+          <button class="primary" onclick="nextQuestion()" id="nextBtn" style="display: none">
+            Next Question
+          </button>
         </div>
-        
-        <div class="question-text" id="questionText"></div>
-        
-        <div class="options-grid" id="optionsGrid"></div>
-        
-        <div id="feedback" class="feedback" style="display: none;"></div>
-        
-        <button class="primary" onclick="submitAnswer()" id="submitBtn" disabled>Submit Answer</button>
-        <button class="primary" onclick="nextQuestion()" id="nextBtn" style="display: none;">Next Question</button>
-      </div>
-      
-      <div id="resultsSection">
-        <h2 style="text-align: center; color: #333; margin-bottom: 30px;">🏆 Final Results</h2>
-        <div class="scoreboard" id="scoreboard"></div>
-        <button class="primary" onclick="goToLobby()">Back to Lobby</button>
+
+        <div id="resultsSection">
+          <h2 style="text-align: center; color: #333; margin-bottom: 30px">🏆 Final Results</h2>
+          <div class="scoreboard" id="scoreboard"></div>
+          <button class="primary" onclick="goToLobby()">Back to Lobby</button>
+        </div>
       </div>
     </div>
-  </div>
-  
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    let socket;
-    let lobbyId;
-    let currentQuestion;
-    let selectedAnswer = null;
-    let isHost = true; // For now, assume first connection is host
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    lobbyId = urlParams.get('lobby');
-    
-    if (!lobbyId) {
-      alert('Invalid game link');
-      window.location.href = '/';
-    }
-    
-    function init() {
-      socket = io();
-      
-      socket.on('game-started', (data) => {
-        if (data.gameState && data.gameState.questions) {
-          displayQuestion(data.gameState.questions[0], 0, data.gameState.questions.length);
-        }
-      });
-      
-      socket.on('next-question', (data) => {
-        selectedAnswer = null;
-        document.getElementById('feedback').style.display = 'none';
-        document.getElementById('submitBtn').style.display = 'block';
-        document.getElementById('nextBtn').style.display = 'none';
-        displayQuestion(data.question, data.questionIndex, 5);
-      });
-      
-      socket.on('answer-result', (data) => {
-        showFeedback(data.isCorrect, data.correctAnswer);
-      });
-      
-      socket.on('game-ended', (data) => {
-        showResults(data.players);
-      });
-      
-      // Request game state
-      fetch(`/api/lobby/${lobbyId}`)
-        .then(res => res.json())
-        .then(data => {
-          // Game should already be started, but we can trigger it for testing
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      let socket;
+      let lobbyId;
+      let currentQuestion;
+      let selectedAnswer = null;
+      let isHost = true; // For now, assume first connection is host
+
+      const urlParams = new URLSearchParams(window.location.search);
+      lobbyId = urlParams.get('lobby');
+
+      if (!lobbyId) {
+        alert('Invalid game link');
+        window.location.href = '/';
+      }
+
+      function init() {
+        socket = io();
+
+        socket.on('game-started', (data) => {
+          if (data.gameState && data.gameState.questions) {
+            displayQuestion(data.gameState.questions[0], 0, data.gameState.questions.length);
+          }
         });
-    }
-    
-    function displayQuestion(question, index, total) {
-      currentQuestion = question;
-      
-      document.getElementById('questionNumber').textContent = `Question ${index + 1} of ${total}`;
-      document.getElementById('questionText').textContent = question.question;
-      
-      const optionsGrid = document.getElementById('optionsGrid');
-      optionsGrid.innerHTML = question.options.map((option, i) => `
+
+        socket.on('next-question', (data) => {
+          selectedAnswer = null;
+          document.getElementById('feedback').style.display = 'none';
+          document.getElementById('submitBtn').style.display = 'block';
+          document.getElementById('nextBtn').style.display = 'none';
+          displayQuestion(data.question, data.questionIndex, 5);
+        });
+
+        socket.on('answer-result', (data) => {
+          showFeedback(data.isCorrect, data.correctAnswer);
+        });
+
+        socket.on('game-ended', (data) => {
+          showResults(data.players);
+        });
+
+        // Request game state
+        fetch(`/api/lobby/${lobbyId}`)
+          .then((res) => res.json())
+          .then((data) => {
+            // Game should already be started, but we can trigger it for testing
+          });
+      }
+
+      function displayQuestion(question, index, total) {
+        currentQuestion = question;
+
+        document.getElementById('questionNumber').textContent = `Question ${index + 1} of ${total}`;
+        document.getElementById('questionText').textContent = question.question;
+
+        const optionsGrid = document.getElementById('optionsGrid');
+        optionsGrid.innerHTML = question.options
+          .map(
+            (option, i) => `
         <button class="option-btn" onclick="selectOption('${escapeHtml(option)}', ${i})" id="option${i}">
           ${escapeHtml(option)}
         </button>
-      `).join('');
-      
-      document.getElementById('submitBtn').disabled = true;
-    }
-    
-    function selectOption(answer, index) {
-      selectedAnswer = answer;
-      
-      // Update UI
-      document.querySelectorAll('.option-btn').forEach((btn, i) => {
-        btn.classList.remove('selected');
-        if (i === index) {
-          btn.classList.add('selected');
-        }
-      });
-      
-      document.getElementById('submitBtn').disabled = false;
-    }
-    
-    function submitAnswer() {
-      if (!selectedAnswer) return;
-      
-      socket.emit('submit-answer', { lobbyId, answer: selectedAnswer });
-      
-      document.getElementById('submitBtn').style.display = 'none';
-      document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
-    }
-    
-    function showFeedback(isCorrect, correctAnswer) {
-      const feedback = document.getElementById('feedback');
-      feedback.style.display = 'block';
-      
-      if (isCorrect) {
-        feedback.className = 'feedback correct';
-        feedback.textContent = '✅ Correct!';
-      } else {
-        feedback.className = 'feedback incorrect';
-        feedback.textContent = `❌ Incorrect! The correct answer is: ${correctAnswer}`;
+      `
+          )
+          .join('');
+
+        document.getElementById('submitBtn').disabled = true;
       }
-      
-      // Show correct/incorrect styling
-      document.querySelectorAll('.option-btn').forEach(btn => {
-        if (btn.textContent.trim() === correctAnswer) {
-          btn.classList.add('correct');
-        } else if (btn.classList.contains('selected')) {
-          btn.classList.add('incorrect');
-        }
-      });
-      
-      if (isHost) {
-        document.getElementById('nextBtn').style.display = 'block';
+
+      function selectOption(answer, index) {
+        selectedAnswer = answer;
+
+        // Update UI
+        document.querySelectorAll('.option-btn').forEach((btn, i) => {
+          btn.classList.remove('selected');
+          if (i === index) {
+            btn.classList.add('selected');
+          }
+        });
+
+        document.getElementById('submitBtn').disabled = false;
       }
-    }
-    
-    function nextQuestion() {
-      socket.emit('next-question', lobbyId);
-    }
-    
-    function showResults(players) {
-      document.getElementById('questionSection').style.display = 'none';
-      document.getElementById('resultsSection').style.display = 'block';
-      
-      const scoreboard = document.getElementById('scoreboard');
-      scoreboard.innerHTML = players.map((player, index) => `
+
+      function submitAnswer() {
+        if (!selectedAnswer) return;
+
+        socket.emit('submit-answer', { lobbyId, answer: selectedAnswer });
+
+        document.getElementById('submitBtn').style.display = 'none';
+        document.querySelectorAll('.option-btn').forEach((btn) => (btn.disabled = true));
+      }
+
+      function showFeedback(isCorrect, correctAnswer) {
+        const feedback = document.getElementById('feedback');
+        feedback.style.display = 'block';
+
+        if (isCorrect) {
+          feedback.className = 'feedback correct';
+          feedback.textContent = '✅ Correct!';
+        } else {
+          feedback.className = 'feedback incorrect';
+          feedback.textContent = `❌ Incorrect! The correct answer is: ${correctAnswer}`;
+        }
+
+        // Show correct/incorrect styling
+        document.querySelectorAll('.option-btn').forEach((btn) => {
+          if (btn.textContent.trim() === correctAnswer) {
+            btn.classList.add('correct');
+          } else if (btn.classList.contains('selected')) {
+            btn.classList.add('incorrect');
+          }
+        });
+
+        if (isHost) {
+          document.getElementById('nextBtn').style.display = 'block';
+        }
+      }
+
+      function nextQuestion() {
+        socket.emit('next-question', lobbyId);
+      }
+
+      function showResults(players) {
+        document.getElementById('questionSection').style.display = 'none';
+        document.getElementById('resultsSection').style.display = 'block';
+
+        const scoreboard = document.getElementById('scoreboard');
+        scoreboard.innerHTML = players
+          .map(
+            (player, index) => `
         <div class="score-item">
           <span class="score-name">${index + 1}. ${escapeHtml(player.name)}</span>
           <span class="score-value">${player.score} points</span>
         </div>
-      `).join('');
-    }
-    
-    function goToLobby() {
-      window.location.href = `/lobby.html?id=${lobbyId}&game=trivia`;
-    }
-    
-    function escapeHtml(unsafe) {
-      if (unsafe === null || unsafe === undefined) return '';
-      return String(unsafe)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-    
-    init();
-  </script>
-</body>
+      `
+          )
+          .join('');
+      }
+
+      function goToLobby() {
+        window.location.href = `/lobby.html?id=${lobbyId}&game=trivia`;
+      }
+
+      function escapeHtml(unsafe) {
+        if (unsafe === null || unsafe === undefined) return '';
+        return String(unsafe)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      init();
+    </script>
+  </body>
 </html>
