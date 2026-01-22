@@ -1,4 +1,5 @@
 # QRGames
+
 Party Games with QR Code Lobby System
 
 ## Features
@@ -22,22 +23,26 @@ Party Games with QR Code Lobby System
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/CrazyDubya/QRGames.git
 cd QRGames
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Start the server:
+
 ```bash
 npm start
 ```
 
 4. Open your browser and navigate to:
+
 ```
 http://localhost:3000
 ```
@@ -65,6 +70,7 @@ http://localhost:3000
 ### Viewing the Lobby
 
 The host can see:
+
 - The lobby code
 - The QR code for sharing
 - The join URL
@@ -94,9 +100,11 @@ QRGames/
 ## API Endpoints
 
 ### POST /api/lobby/create
+
 Creates a new lobby and returns lobby information with QR code.
 
 **Response:**
+
 ```json
 {
   "lobbyId": "abc12345",
@@ -106,9 +114,11 @@ Creates a new lobby and returns lobby information with QR code.
 ```
 
 ### GET /api/lobby/:lobbyId
+
 Gets information about a specific lobby.
 
 **Response:**
+
 ```json
 {
   "id": "abc12345",
@@ -120,10 +130,12 @@ Gets information about a specific lobby.
 ## WebSocket Events
 
 ### Client → Server
+
 - `host-lobby`: Host connects to monitor a lobby
 - `join-lobby`: Player joins a lobby with their profile
 
 ### Server → Client
+
 - `player-joined`: Notifies when a player joins
 - `player-left`: Notifies when a player disconnects
 - `error`: Sends error messages
@@ -140,4 +152,4 @@ Gets information about a specific lobby.
 
 ## License
 
-ISC 
+ISC

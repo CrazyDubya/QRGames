@@ -3,6 +3,7 @@
 Welcome to QR Games! This guide will help you set up and play party games with your friends using QR codes.
 
 ## Table of Contents
+
 1. [Getting Started](#getting-started)
 2. [Creating a Game Lobby](#creating-a-game-lobby)
 3. [Joining a Game](#joining-a-game)
@@ -45,6 +46,7 @@ Click on a game to select it, then click "Create Lobby" to proceed.
 ### Step 2: Share the QR Code
 
 Once you create a lobby, you'll see:
+
 - A unique **Lobby Code** (8 characters)
 - A **QR Code** for easy joining
 - A **Join URL** that can be shared
@@ -59,6 +61,7 @@ Players can scan the QR code with their phone cameras to join instantly!
 ### Step 3: Wait for Players
 
 As players join, you'll see them appear in the player list in real-time. Each player will show:
+
 - Their chosen avatar (selfie, uploaded photo, or initials)
 - Their name
 
@@ -144,6 +147,7 @@ Once enough players have joined, click the "Start Game" button to begin!
 ### Bingo Card
 
 Each bingo card has:
+
 - **5 columns** labeled B-I-N-G-O
 - **5 rows** of numbers
 - A **FREE space** in the center (always marked)
@@ -159,19 +163,24 @@ Each bingo card has:
 Choose from three winning patterns:
 
 #### 1. Single Line
+
 Complete any:
+
 - **Horizontal row** (5 in a row)
 - **Vertical column** (5 in a column)
 - **Diagonal** (corner to corner)
 
 #### 2. Four Corners
+
 Mark all four corners of your card:
+
 - Top-left
 - Top-right
 - Bottom-left
 - Bottom-right
 
 #### 3. Full Card
+
 Mark **all 25 spaces** on your card (including the FREE space)
 
 ### How to Play
@@ -211,16 +220,19 @@ Mark **all 25 spaces** on your card (including the FREE space)
 ## Troubleshooting
 
 ### Can't Scan QR Code
+
 - Ensure your camera permissions are enabled
 - Try entering the join URL manually
 - Make sure you have a stable internet connection
 
 ### Players Not Appearing
+
 - Check that all players are on the same lobby code
 - Refresh the page to reconnect
 - Ensure the server is running properly
 
 ### Game Not Starting
+
 - Make sure at least one player has joined
 - Only the host can start the game
 - Try refreshing and rejoining if there are connection issues
