@@ -1,7 +1,40 @@
 /**
- * Trivia game logic
+ * @fileoverview Trivia game logic and state management
+ * Contains functions for initializing trivia games, checking answers,
+ * managing question progression, and calculating final scores.
+ * 
+ * @module games/trivia
  */
 
+/**
+ * @typedef {Object} TriviaQuestion
+ * @property {string} question - The question text
+ * @property {string[]} options - Array of answer options
+ * @property {string} correctAnswer - The correct answer
+ */
+
+/**
+ * @typedef {Object} TriviaGameState
+ * @property {TriviaQuestion[]} questions - Array of trivia questions
+ * @property {number} currentQuestionIndex - Index of current question
+ */
+
+/**
+ * @typedef {Object} Lobby
+ * @property {string} id - Unique lobby identifier
+ * @property {Player[]} players - Array of players in the lobby
+ * @property {string} gameType - Type of game ('trivia' or 'bingo')
+ * @property {TriviaGameState|BingoGameState} gameState - Current game state
+ */
+
+/**
+ * @typedef {Object} Player
+ * @property {string} id - Socket ID of the player
+ * @property {string} name - Player's display name
+ * @property {number} [score] - Player's score (for trivia)
+ */
+
+/** @type {TriviaQuestion[]} Default trivia questions */
 const triviaQuestions = [
   {
     question: 'What is the capital of France?',
@@ -32,7 +65,10 @@ const triviaQuestions = [
 
 /**
  * Initialize trivia game state for a lobby
- * @param {object} lobby - The lobby to initialize
+ * Sets up questions and initializes all player scores to zero
+ * 
+ * @param {Lobby} lobby - The lobby to initialize
+ * @returns {void}
  */
 function initializeTriviaGame(lobby) {
   lobby.gameState = {
@@ -48,9 +84,10 @@ function initializeTriviaGame(lobby) {
 
 /**
  * Check if an answer is correct
- * @param {object} lobby - The lobby
+ * 
+ * @param {Lobby} lobby - The lobby with game state
  * @param {string} answer - The submitted answer
- * @returns {boolean} True if correct
+ * @returns {boolean} True if answer is correct
  */
 function checkAnswer(lobby, answer) {
   if (!lobby.gameState || lobby.gameType !== 'trivia') {
@@ -62,8 +99,10 @@ function checkAnswer(lobby, answer) {
 }
 
 /**
- * Move to next question
- * @param {object} lobby - The lobby
+ * Move to next question in the trivia game
+ * Increments the question index and checks if game is over
+ * 
+ * @param {Lobby} lobby - The lobby
  * @returns {{hasNext: boolean, isGameOver: boolean}} Next question status
  */
 function nextQuestion(lobby) {
@@ -82,9 +121,10 @@ function nextQuestion(lobby) {
 }
 
 /**
- * Get final scores sorted by score
- * @param {object} lobby - The lobby
- * @returns {Array} Sorted player scores
+ * Get final scores sorted by score (highest first)
+ * 
+ * @param {Lobby} lobby - The lobby
+ * @returns {Array<{name: string, score: number}>} Sorted player scores
  */
 function getFinalScores(lobby) {
   return lobby.players

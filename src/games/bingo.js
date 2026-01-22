@@ -1,10 +1,33 @@
 /**
- * Bingo game logic
+ * @fileoverview Bingo game logic and card generation
+ * Implements 75-ball bingo with multiple win patterns including
+ * single line, 4-corners, and full card patterns.
+ * 
+ * @module games/bingo
  */
 
 /**
- * Generate a bingo card
- * @returns {Array} 5x5 bingo card
+ * @typedef {Object} BingoCell
+ * @property {number|string} value - The cell value (number 1-75 or 'FREE')
+ * @property {boolean} marked - Whether the cell has been marked
+ */
+
+/**
+ * @typedef {Object} BingoGameState
+ * @property {number[]} calledNumbers - Array of numbers that have been called
+ * @property {string[]} patterns - Available win patterns
+ */
+
+/**
+ * Generate a standard 75-ball bingo card
+ * Card follows traditional bingo rules:
+ * - B column (0): 1-15
+ * - I column (1): 16-30
+ * - N column (2): 31-45 (with FREE space at center)
+ * - G column (3): 46-60
+ * - O column (4): 61-75
+ * 
+ * @returns {BingoCell[][]} 5x5 bingo card (array of rows)
  */
 function generateBingoCard() {
   const card = [];
@@ -48,7 +71,10 @@ function generateBingoCard() {
 
 /**
  * Initialize bingo game state for a lobby
- * @param {object} lobby - The lobby to initialize
+ * Generates unique bingo cards for all players
+ * 
+ * @param {Lobby} lobby - The lobby to initialize
+ * @returns {void}
  */
 function initializeBingoGame(lobby) {
   lobby.gameState = {
@@ -63,9 +89,14 @@ function initializeBingoGame(lobby) {
 }
 
 /**
- * Check if a bingo pattern is valid
- * @param {Array} card - The bingo card
- * @param {string} pattern - The pattern to check
+ * Check if a bingo pattern is complete on a card
+ * Supports three pattern types:
+ * - single-line: Any row, column, or diagonal
+ * - 4-corners: All four corner cells
+ * - full-card: All cells marked (blackout)
+ * 
+ * @param {BingoCell[][]} card - The bingo card to check
+ * @param {string} pattern - The pattern type to check
  * @returns {boolean} True if pattern is complete
  */
 function checkBingoPattern(card, pattern) {
@@ -104,8 +135,10 @@ function checkBingoPattern(card, pattern) {
 
 /**
  * Call a random available bingo number
- * @param {object} lobby - The lobby
- * @returns {{number: number|null, calledNumbers: Array}} Called number result
+ * Numbers range from 1-75 and are only called once
+ * 
+ * @param {Lobby} lobby - The lobby with game state
+ * @returns {{number: number|null, calledNumbers: number[]}} Called number result
  */
 function callNumber(lobby) {
   if (!lobby.gameState || lobby.gameType !== 'bingo') {

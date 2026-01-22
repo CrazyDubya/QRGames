@@ -1,7 +1,18 @@
 /**
- * QRGames Server - Main entry point
- * Refactored for modularity and maintainability
+ * @fileoverview QRGames Server - Main entry point
+ * Refactored for modularity and maintainability.
+ * Supports both in-memory and Redis storage for session persistence.
+ * 
+ * @module server
+ * @requires express
+ * @requires http
+ * @requires socket.io
+ * @requires ./src/routes/lobby
+ * @requires ./src/sockets/lobby
+ * @requires ./src/sockets/game
+ * @requires ./src/utils/storage
  */
+
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -18,13 +29,25 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
+/** @constant {number} Server port from environment or default */
 const PORT = process.env.PORT || 3000;
-const STORAGE_TYPE = process.env.STORAGE_TYPE || 'memory'; // 'memory' or 'redis'
+
+/** @constant {string} Storage type: 'memory' or 'redis' */
+const STORAGE_TYPE = process.env.STORAGE_TYPE || 'memory';
+
+/** @constant {string} Redis connection URL */
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
-// Initialize storage
+/** @type {Storage} Global lobbies storage instance */
 let lobbies;
 
+/**
+ * Initialize and start the server
+ * Sets up storage, middleware, routes, and socket handlers
+ * @async
+ * @function initializeServer
+ * @throws {Error} If server initialization fails
+ */
 async function initializeServer() {
   try {
     // Create storage instance
